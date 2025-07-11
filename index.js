@@ -9,12 +9,18 @@ const app = express();
 dotenv.config();
 
 // Middleware Setup (IMPORTANT ORDER)
-app.use( cors(
-  {
-    origin: "https://storeuiii.vercel.app/",
-    credentials: true  // Allow cookies/tokens
-  }
-) );
+// Configure CORS properly
+const corsOptions = {
+  origin: [
+    'https://storeuiii.vercel.app/',
+    'http://localhost:3000' // For local development
+  ],
+  credentials: true
+};
+
+app.use( cors( corsOptions ) );
+app.options( '*', cors( corsOptions ) ); // Enable preflight for all routes
+
 app.use( express.json() ); // For JSON bodies
 app.use( express.urlencoded( { extended: true } ) ); // For form data
 app.use( cookieParser() );
@@ -27,6 +33,10 @@ import productRoutes from "./routes/productRoutes.js";
 
 app.get( "/", ( req, res ) => {
   res.send( "Hello World" );
+} );
+// Handle 404 for API routes
+app.use( '/api/*', ( req, res ) => {
+  res.status( 404 ).json( { error: "API endpoint not found" } );
 } );
 
 // debug;
@@ -60,7 +70,8 @@ connectDB()
   } );
 const __dirname = path.resolve();
 // Serve static files from uploads directory
-app.use( "/uploads", express.static( path.join( __dirname, "uploads" ) ) );
+app.use( '/uploads', express.static( path.join( process.cwd(), 'public/uploads' ) ) );
+
 
 
 // Routes
