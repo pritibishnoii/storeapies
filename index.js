@@ -9,7 +9,12 @@ const app = express();
 dotenv.config();
 
 // Middleware Setup (IMPORTANT ORDER)
-app.use( cors() );
+app.use( cors(
+  {
+    origin: "https://storeuiii.vercel.app/",
+    credentials: true  // Allow cookies/tokens
+  }
+) );
 app.use( express.json() ); // For JSON bodies
 app.use( express.urlencoded( { extended: true } ) ); // For form data
 app.use( cookieParser() );
