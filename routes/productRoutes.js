@@ -12,7 +12,6 @@ import {
   updateProduct,
 } from "../controllers/productController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
-import upload from "../utils/multerFileUpload.js";
 import checkId from "../utils/checkId.js";
 const router = express.Router();
 
@@ -21,7 +20,6 @@ router
   .post(
     authenticate, // User login hona chahiye
     authorizeAdmin, // Admin hona chahiye
-    upload.single( "image" ), // Agar file upload hai to
     addProduct
   )
   .get( fetchProductsBykeyword );
@@ -34,7 +32,7 @@ router.get( "/new", fetchNewProducts );
 
 router
   .route( "/:id" )
-  .put( authenticate, authorizeAdmin, upload.single( "image" ), updateProduct )
+  .put( authenticate, authorizeAdmin, updateProduct )
   .delete( authenticate, authorizeAdmin, removeProduct )
   .get( fetchProductById );
 
