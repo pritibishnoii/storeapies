@@ -15,6 +15,7 @@ import productRoutes from "./routes/productRoutes.js";
 
 // Middleware Setup (IMPORTANT ORDER)
 // Configure CORS properly
+
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
@@ -28,6 +29,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+//     exposedHeaders: ["Set-Cookie"],
+//   })
+// );
+
 app.use(express.json()); // For JSON bodies
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use(cookieParser());
@@ -39,11 +50,18 @@ app.use(
   })
 );
 
+// Serve static files from uploads directory
+app.use("/uploads", express.static("uploads"));
+
 // Connecting to cloudinary
 cloudinaryConnect();
 
 app.get("/", (req, res) => {
   res.send("Hello World");
+});
+
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API is working", timestamp: new Date().toISOString() });
 });
 
 // // Database Connection

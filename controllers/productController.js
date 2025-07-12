@@ -4,9 +4,6 @@ import Product from "../models/productModel.js";
 import { uploadImageToCloudinary } from "../utils/uploadImage.js";
 export const addProduct = asyncHandler(async (req, res) => {
   try {
-    console.log("Request body:", req.body);
-    console.log("Request files:", req.files);
-
     const {
       name,
       description,
@@ -20,7 +17,6 @@ export const addProduct = asyncHandler(async (req, res) => {
     } = req.body;
 
     if (!req.files || !req.files.image) {
-      console.log("No files uploaded or no image file");
       return res.status(400).json({ message: "Please upload an image" });
     }
 
@@ -73,7 +69,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     const product = await Product.find({})
       .populate("category") // get category details also
       .limit(12) // only 12 product at once
-      .sort({ createAt: -1 }); // most recently  added come first
+      .sort({ createdAt: -1 }); // most recently  added come first
 
     return res.status(200).json({
       message: "product fetched successfully",
