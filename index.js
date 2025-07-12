@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import fileUpload from "express-fileupload";
-import { cloudinaryConnect } from "./config/cloudinary.js"
+import { cloudinaryConnect } from "./config/cloudinary.js";
 const app = express();
 dotenv.config();
 import userRoutes from "./routes/userRoutes.js";
@@ -15,42 +15,42 @@ import productRoutes from "./routes/productRoutes.js";
 
 // Middleware Setup (IMPORTANT ORDER)
 // Configure CORS properly
-// const corsOptions = {
-//   origin: [
-//     'https://storeuiii.vercel.app',
-//     'http://localhost:5173' // For local development
-//   ],
-//   credentials: true
-// };
+const corsOptions = {
+  origin: [
+    "https://storeuiii.vercel.app",
+    "http://localhost:5173", // For local development
+  ],
+  credentials: true,
+};
 
-// app.use( cors( corsOptions ) );
+app.use(cors(corsOptions));
 app.use(
-  cors( {
-    origin: "*",
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? ["https://storeuiii.vercel.app", "https://storeapies.vercel.app"]
+        : ["http://localhost:5173", "http://localhost:3000"],
     credentials: true,
-  } )
+  })
 ); // Enable preflight for all routes
 
-app.use( express.json() ); // For JSON bodies
-app.use( express.urlencoded( { extended: true } ) ); // For form data
-app.use( cookieParser() );
-
-
+app.use(express.json()); // For JSON bodies
+app.use(express.urlencoded({ extended: true })); // For form data
+app.use(cookieParser());
 
 app.use(
-  fileUpload( {
+  fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
-  } )
+  })
 );
 
 // Connecting to cloudinary
 cloudinaryConnect();
 
-app.get( "/", ( req, res ) => {
-  res.send( "Hello World" );
-} );
-
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
 // // Database Connection
 // connectDB(() => {
@@ -60,24 +60,22 @@ app.get( "/", ( req, res ) => {
 //   });
 // });
 
-
 // Connect to database first
 connectDB()
-  .then( () => {
+  .then(() => {
     const PORT = process.env.PORT || 5000;
-    app.listen( PORT, "0.0.0.0", () => {
-      console.log( `Server is running at http://localhost:${ PORT } 🎉` );
-    } );
-  } )
-  .catch( ( err ) => {
-    console.error( "Database connection failed:", err );
-  } );
-
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running at http://localhost:${PORT} 🎉`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err);
+  });
 
 // Routes
-app.use( "/api/users", userRoutes );
-app.use( "/api/category", categoryRoutes );
-app.use( "/api/products", productRoutes );
-app.use( "/api/orders", orderRoutes );
+app.use("/api/users", userRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 export default app;
