@@ -26,7 +26,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 
     // upload image
     const productImage = req.files.image;
-    console.log("productImage---->", productImage);
+    // console.log("productImage---->", productImage);
 
     if (!process.env.FOLDER_NAME) {
       console.log("FOLDER_NAME not set in environment variables");
@@ -88,13 +88,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
 export const updateProduct = asyncHandler(async (req, res) => {
   try {
-    // First handle the file upload if present
-    let imagePath;
-    if (req.file) {
-      imagePath = `/uploads/${req.file.filename}`; // Adjust path as needed
-    }
-
-    // Then handle other form data
     const updates = {
       name: req.body.name,
       description: req.body.description,
@@ -103,8 +96,36 @@ export const updateProduct = asyncHandler(async (req, res) => {
       quantity: req.body.quantity,
       brand: req.body.brand,
       countInStock: req.body.countInStock,
-      ...(imagePath && { image: imagePath }), // Only add image if it exists
     };
+
+    // Handle image upload only if a new image is provided
+    if (req.files && req.files.image) {
+      const productImage = req.files.image;
+
+      // Validate that FOLDER_NAME is set
+      if (!process.env.FOLDER_NAME) {
+        return res.status(500).json({
+          success: false,
+          message: "Server configuration error",
+        });
+      }
+
+      try {
+        const uploadImageResult = await uploadImageToCloudinary(
+          productImage,
+          process.env.FOLDER_NAME,
+          1000
+        );
+
+        updates.image = uploadImageResult.secure_url;
+      } catch (uploadError) {
+        console.error("Image upload error:", uploadError);
+        return res.status(400).json({
+          success: false,
+          message: "Failed to upload image. Please try again.",
+        });
+      }
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
