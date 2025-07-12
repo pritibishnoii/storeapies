@@ -16,23 +16,17 @@ import productRoutes from "./routes/productRoutes.js";
 // Middleware Setup (IMPORTANT ORDER)
 // Configure CORS properly
 const corsOptions = {
-  origin: [
-    "https://storeuiii.vercel.app",
-    "http://localhost:5173", // For local development
-  ],
+  origin:
+    process.env.NODE_ENV === "production"
+      ? ["https://storeuiii.vercel.app", "https://storeapies.vercel.app"]
+      : ["http://localhost:5173", "http://localhost:5000"],
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
+  exposedHeaders: ["*", "Authorization"],
 };
 
 app.use(cors(corsOptions));
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? ["https://storeuiii.vercel.app", "https://storeapies.vercel.app"]
-        : ["http://localhost:5173", "http://localhost:3000"],
-    credentials: true,
-  })
-); // Enable preflight for all routes
 
 app.use(express.json()); // For JSON bodies
 app.use(express.urlencoded({ extended: true })); // For form data

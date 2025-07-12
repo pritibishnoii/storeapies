@@ -16,25 +16,25 @@ import checkId from "../utils/checkId.js";
 const router = express.Router();
 
 router
-  .route( "/" )
+  .route("/")
   .post(
     authenticate, // User login hona chahiye
     authorizeAdmin, // Admin hona chahiye
     addProduct
   )
-  .get( fetchProductsBykeyword );
+  .get(fetchProductsBykeyword);
 
-router.route( "/allproducts" ).get( getAllProducts );
-router.route( "/:id/reviews" ).post( authenticate, checkId, addProductReview );
+router.route("/allproducts").get(getAllProducts);
+router.route("/:id/reviews").post(checkId, addProductReview);
 
-router.get( "/top", fetchTopProducts );
-router.get( "/new", fetchNewProducts );
+router.get("/top", fetchTopProducts);
+router.get("/new", fetchNewProducts);
 
 router
-  .route( "/:id" )
-  .put( authenticate, authorizeAdmin, updateProduct )
-  .delete( authenticate, authorizeAdmin, removeProduct )
-  .get( fetchProductById );
+  .route("/:id")
+  .put(authenticate, authorizeAdmin, updateProduct)
+  .delete(authenticate, authorizeAdmin, removeProduct)
+  .get(fetchProductById);
 
-router.route( "/filtered-products" ).post( filterProducts );
+router.route("/filtered-products").post(filterProducts);
 export default router;
